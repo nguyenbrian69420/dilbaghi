@@ -106,7 +106,16 @@
         };
 
         // Prompt user for number of images
-        const numImages = parseInt(prompt('¿Cuántos?', '5'), 10);
+        let numImages;
+        do {
+            numImages = prompt('¿Cuántos? (Enter a number between 1 and 10)', '5');
+            numImages = parseInt(numImages, 10);
+        } while (isNaN(numImages) || numImages <= 0 || numImages > 10);
+        if (isNaN(numImages) || numImages <= 0) {
+            numImages = 1; // Default to 1 if invalid input
+        } else if (numImages > 10) {
+            numImages = 10; // Cap at 10
+        }
         for (let i = 0; i < numImages; i++) {
             createImage(i);
         }
