@@ -25,10 +25,12 @@
 
         let x = 100, y = 100; // Initial position
         let dx = 2, dy = 2; // Velocity
-        const imageWidth = 200; // Image width (same as CSS width)
-        const imageHeight = 200; // Approximate image height
+        let imageWidth = 200;
+        let imageHeight = 200;
 
         const updatePosition = () => {
+            imageWidth = 200;
+            imageHeight = 200;
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
 
