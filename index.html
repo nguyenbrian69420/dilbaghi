@@ -15,7 +15,7 @@
             position: absolute;
             width: 200px;
             height: auto;
-            filter: brightness(1) saturate(1);
+            filter: hue-rotate(0deg) brightness(1.2) saturate(1.5);
         }
     </style>
 </head>
@@ -23,14 +23,11 @@
     <script>
         const images = [];
         const velocities = [];
-        const usedColors = new Set();
+        const hues = []; // Array to keep track of the hue for each image
 
-        // Generate a random hue value for tinting
-        const getRandomHue = () => Math.floor(Math.random() * 360);
-
-        const applyHueTint = (img) => {
-            const hue = getRandomHue();
-            img.style.filter = `hue-rotate(${hue}deg) brightness(1.2) saturate(1.5)`;
+        const updateHue = (index) => {
+            hues[index] = (hues[index] + 30) % 360; // Increment hue by 30 degrees (adjust as desired)
+            images[index].style.filter = `hue-rotate(${hues[index]}deg) brightness(1.2) saturate(1.5)`;
         };
 
         const createImage = (index) => {
@@ -40,9 +37,10 @@
             img.className = 'bouncing-image';
             img.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
             img.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
-            applyHueTint(img); // Apply initial hue tint
             document.body.appendChild(img);
             images.push(img);
+            hues.push(Math.random() * 360); // Assign a random initial hue
+            updateHue(index); // Apply initial hue
 
             const dx = (Math.random() < 0.5 ? 4 : -4) || 4;
             const dy = (Math.random() < 0.5 ? 4 : -4) || 4;
@@ -62,11 +60,11 @@
                 // Bounce off walls
                 if (x + dx > windowWidth - 200 || x + dx < 0) {
                     velocities[i].dx = -dx;
-                    applyHueTint(img); // Change tint on wall collision
+                    updateHue(i); // Change tint on wall collision
                 }
                 if (y + dy > windowHeight - 200 || y + dy < 0) {
                     velocities[i].dy = -dy;
-                    applyHueTint(img); // Change tint on wall collision
+                    updateHue(i); // Change tint on wall collision
                 }
 
                 // Update position
@@ -107,8 +105,8 @@
                             otherImg.style.left = `${otherNewX}px`;
                             otherImg.style.top = `${otherNewY}px`;
 
-                            applyHueTint(img); // Change tint on collision
-                            applyHueTint(otherImg); // Change tint on collision
+                            updateHue(i); // Change tint on collision
+                            updateHue(j); // Change tint on collision
                         }
                     }
                 });
@@ -124,7 +122,7 @@
         // Prompt user for number of images
         let numImages;
         do {
-            numImages = prompt('¿Cuántos? (Enter a number between 1 and 10)', '5');
+            numImages = prompt('¿Cuántos? (Enter a number between 1 and 10)', '');
             numImages = parseInt(numImages, 10);
         } while (isNaN(numImages) || numImages <= 0 || numImages > 10);
 
