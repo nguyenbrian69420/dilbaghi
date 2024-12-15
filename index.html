@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouncing Logo</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: url('circuit.png') no-repeat center center fixed; background-size: cover;
+        }
+        .bouncing-image {
+            position: absolute;
+            width: 200px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <img src="dhruv.png" alt="Bouncing Image" class="bouncing-image" id="logo">
+
+    <script>
+        const image = document.getElementById('logo');
+
+        let x = 100, y = 100; // Initial position
+        let dx = 2, dy = 2; // Velocity
+        const imageWidth = 200; // Image width (same as CSS width)
+        const imageHeight = 200; // Approximate image height
+
+        const updatePosition = () => {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // Bounce horizontally
+            if (x + dx > windowWidth - imageWidth || x + dx < 0) {
+                dx = -dx;
+            }
+
+            // Bounce vertically
+            if (y + dy > windowHeight - imageHeight || y + dy < 0) {
+                dy = -dy;
+            }
+
+            x += dx;
+            y += dy;
+
+            image.style.left = `${x}px`;
+            image.style.top = `${y}px`;
+
+            requestAnimationFrame(updatePosition);
+        };
+
+        // Start the animation
+        updatePosition();
+    </script>
+</body>
+</html>
