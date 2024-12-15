@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bouncing Logo</title>
+    <title>Bouncing Logos</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background: url('circuit.png') no-repeat center center fixed; background-size: cover;
+            background: url('circuit.png') no-repeat center center fixed; 
+            background-size: cover;
         }
         .bouncing-image {
             position: absolute;
@@ -18,43 +19,100 @@
     </style>
 </head>
 <body>
-    <img src="dhruv.png" alt="Bouncing Image" class="bouncing-image" id="logo">
-
     <script>
-        const image = document.getElementById('logo');
+        const images = [];
+        const velocities = [];
 
-        let x = 100, y = 100; // Initial position
-        let dx = 2, dy = 2; // Velocity
-        let imageWidth = 200;
-        let imageHeight = 200;
+        const createImage = (index) => {
+            const img = document.createElement('img');
+            img.src = 'dhruv.png';
+            img.alt = `Bouncing Image ${index}`;
+            img.className = 'bouncing-image';
+            img.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
+            img.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
+            document.body.appendChild(img);
+            images.push(img);
 
-        const updatePosition = () => {
-            imageWidth = 200;
-            imageHeight = 200;
+            const dx = (Math.random() < 0.5 ? 4 : -4) || 4;
+            const dy = (Math.random() < 0.5 ? 4 : -4) || 4;
+            velocities.push({ dx, dy });
+        };
+
+        const updatePositions = () => {
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
 
-            // Bounce horizontally
-            if (x + dx > windowWidth - imageWidth || x + dx < 0) {
-                dx = -dx;
-            }
+            images.forEach((img, i) => {
+                let x = parseFloat(img.style.left);
+                let y = parseFloat(img.style.top);
 
-            // Bounce vertically
-            if (y + dy > windowHeight - imageHeight || y + dy < 0) {
-                dy = -dy;
-            }
+                const { dx, dy } = velocities[i];
 
-            x += dx;
-            y += dy;
+                // Bounce off walls
+                if (x + dx > windowWidth - 200 || x + dx < 0) {
+                    velocities[i].dx = -dx;
+                }
+                if (y + dy > windowHeight - 200 || y + dy < 0) {
+                    velocities[i].dy = -dy;
+                }
 
-            image.style.left = `${x}px`;
-            image.style.top = `${y}px`;
+                // Update position
+                x += velocities[i].dx;
+                y += velocities[i].dy;
 
-            requestAnimationFrame(updatePosition);
+                // Check for collisions with other images
+                images.forEach((otherImg, j) => {
+                    if (i !== j) {
+                        const otherX = parseFloat(otherImg.style.left);
+                        const otherY = parseFloat(otherImg.style.top);
+
+                        const dist = Math.sqrt(
+                            Math.pow(x - otherX, 2) + Math.pow(y - otherY, 2)
+                        );
+
+                        if (dist < 200) {
+                            const angle = Math.atan2(y - otherY, x - otherX);
+
+                            // Update velocities to move apart
+                            velocities[i].dx = Math.cos(angle) * 4;
+                            velocities[i].dy = Math.sin(angle) * 4;
+                            velocities[j].dx = -Math.cos(angle) * 4;
+                            velocities[j].dy = -Math.sin(angle) * 4;
+
+                            // Prevent overlapping by adjusting positions
+                            const overlap = 200 - dist;
+                            const adjustX = Math.cos(angle) * overlap / 2;
+                            const adjustY = Math.sin(angle) * overlap / 2;
+
+                            x += adjustX;
+                            y += adjustY;
+                            img.style.left = `${x}px`;
+                            img.style.top = `${y}px`;
+
+                            const otherNewX = otherX - adjustX;
+                            const otherNewY = otherY - adjustY;
+                            otherImg.style.left = `${otherNewX}px`;
+                            otherImg.style.top = `${otherNewY}px`;
+                        }
+                    }
+                });
+
+                // Apply updated positions
+                img.style.left = `${x}px`;
+                img.style.top = `${y}px`;
+            });
+
+            requestAnimationFrame(updatePositions);
         };
 
+        // Prompt user for number of images
+        const numImages = parseInt(prompt('¿Cuántos?', '5'), 10);
+        for (let i = 0; i < numImages; i++) {
+            createImage(i);
+        }
+
         // Start the animation
-        updatePosition();
+        updatePositions();
     </script>
 </body>
 </html>
